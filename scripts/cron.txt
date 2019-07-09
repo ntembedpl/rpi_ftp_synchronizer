@@ -1,0 +1,2 @@
+crontab -e
+* * * * * ~/skrypt.sh > /dev/ttyS0
