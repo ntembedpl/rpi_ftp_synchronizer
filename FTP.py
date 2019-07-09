@@ -39,7 +39,6 @@ def move_to_FTP():
     for fl in transferList:
         UploadFTP(fl)
         print("Uploaded\n")
-#print(ftplib.FTP('s22.zenbox.pl','tyma@ntembed.pl','malibu'))  
   
 connect_FTP(ftp_username,ftp_password)
 
