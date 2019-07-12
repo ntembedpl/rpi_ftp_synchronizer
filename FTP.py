@@ -3,17 +3,24 @@ import os
 import ftplib
 import _thread
 import time
-import progressbar
+import RPi.GPIO as GPIO
 
-ftp_path = '/home/robert/Desktop/lftp_test/USG'
+ftp_path = '/home/pi/Desktop/photo'
 ftp_username='fnapierala@3rstudio.com'
 ftp_password='7lxCWEh5DB'
 files = []
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(9, GPIO.OUT,initial=GPIO.HIGH)
+GPIO.setup(10, GPIO.OUT,initial=GPIO.HIGH)
+GPIO.setup(25, GPIO.OUT,initial=GPIO.HIGH)
+
 ftp=ftplib.FTP()
 
 def ProgressCallback(self):
-    print('.')
+    GPIO.output(25,not GPIO.input(25))
 
 def UploadFTP(file):
     f=open(ftp_path+'/'+file,'rb')
@@ -28,22 +35,24 @@ def LED_blink(text,delay):
         print('%s: %d' % (text,count))
         
 def connect_FTP(username,password):     
-    #LED zielona
+    GPIO.output(9,GPIO.LOW)
     try:
         ftp.connect('s5.zenbox.pl')
     except:
         print("Failed to connect server!")
-        #LED czerwona - błąd
-    choice=input()
-    while choice!="b":
-        choice=input()
-        time.sleep(0.001)
+        GPIO.output(9,GPIO.HIGH)
+        GPIO.output(10,GPIO.LOW)
+#    choice=input()
+#    while choice!="b":
+#        choice=input()
+#        time.sleep(0.001)
         
     try:
         ftp.login(username,password)
     except:
         print("Failed to login!")
-        #LED czerwona - błąd
+        GPIO.output(9,GPIO.HIGH)
+        GPIO.output(10,GPIO.LOW)
         
 def move_to_FTP():
     lFileSet=set(os.listdir(ftp_path))
@@ -56,10 +65,10 @@ def move_to_FTP():
         print("Uploaded\n")
   
 connect_FTP(ftp_username,ftp_password)
-
-#migaj LED niebieską
+GPIO.output(9,GPIO.HIGH)
 move_to_FTP()
-#jeśli błąd to czerwona
 ftp.quit()
-#LED zgaszona
-
+GPIO.output(25,GPIO.HIGH)
+GPIO.output(9,GPIO.LOW)
+time.sleep(5)
+GPIO.cleanup()
