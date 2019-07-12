@@ -14,7 +14,7 @@ GPIO.setup(25, GPIO.OUT,initial=GPIO.HIGH)
   
 def my_callback2(channel):  
     print("falling edge detected on 24")
-    os.system("/home/pi/Desktop/USG/blink.py")    
+    os.system("/home/pi/rpi_ftp_synchronizer/FTP.py")    
   
 GPIO.add_event_detect(24, GPIO.FALLING, callback=my_callback2, bouncetime=300)  
   

@@ -5,7 +5,7 @@ import _thread
 import time
 import RPi.GPIO as GPIO
 
-ftp_path = '/home/pi/Desktop/photo'
+ftp_path = '/mnt'
 ftp_username='fnapierala@3rstudio.com'
 ftp_password='7lxCWEh5DB'
 files = []
@@ -61,9 +61,11 @@ def move_to_FTP():
     print("Missing: "+str((transferList)))
     
     for fl in transferList:
-        UploadFTP(fl)
-        print("Uploaded\n")
+        if fl!='System Volume Information':
+            UploadFTP(fl)
+            print("Uploaded\n")
   
+os.system("sudo mount /piusb.bin /mnt")
 connect_FTP(ftp_username,ftp_password)
 GPIO.output(9,GPIO.HIGH)
 move_to_FTP()
@@ -71,4 +73,5 @@ ftp.quit()
 GPIO.output(25,GPIO.HIGH)
 GPIO.output(9,GPIO.LOW)
 time.sleep(5)
+os.system("sudo umount /piusb.bin")
 GPIO.cleanup()
