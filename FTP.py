@@ -7,9 +7,9 @@ import RPi.GPIO as GPIO
 import yaml
 
 ftp_path = '/mnt'
-ftp_username='fnapierala@3rstudio.com'
-ftp_password='7lxCWEh5DB'
-ftp_server='s5.zenbox.pl'
+ftp_username=''
+ftp_password=''
+ftp_server=''
 username=""
 files = []
 
@@ -24,7 +24,7 @@ ftp=ftplib.FTP()
 
 def CopyConfig(path):
     if (os.path.isfile(path)==True):
-        os.system("mv "+path+" "+os.getcwd()+"/config.yaml")
+        os.system("mv "+path+" /home/pi/rpi_ftp_synchronizer/config.yaml")
         
 def ReadConfig(path):
     if (os.path.isfile(path)==True):
@@ -36,12 +36,16 @@ def ReadConfig(path):
             ftp_username=config['login']
             ftp_server=config['server']
             ftp_password=config['password']  
+            print("Read config")
             f.close()
 
 def WriteLog():
-    total_size=sum(os.path.getsize(f) for f in os.listdir('/mnt') if os.path.isfile(f))
+    total_size=os.popen("du -sb /mnt | awk '{printf $1}'").read()
+    global username
+    print("size is: ")
+    print(total_size)
     log=dict(
-        size='%.1f%%'%((total_size/10000)*100),
+        size='%.1f%%'%((float(total_size)/508000000)*100),
         signal='100%',
         username=username,
         )
@@ -51,9 +55,9 @@ def WriteLog():
 def ProgressCallback(self):
     GPIO.output(25,not GPIO.input(25))
 
-def UploadFTP(file):
-    f=open(ftp_path+'/'+file,'rb')
-    ftp.storbinary('STOR '+file,f,8192,ProgressCallback)
+def UploadFTP(file,filename):
+    f=open(file,'rb')
+    ftp.storbinary('STOR '+filename,f,8192,ProgressCallback)
     f.close()
 
 def LED_blink(text,delay):
@@ -82,7 +86,8 @@ def connect_FTP(username,password,server):
         print("Failed to login!")
         GPIO.output(9,GPIO.HIGH)
         GPIO.output(10,GPIO.LOW)
-        
+        os.system("sudo umount /piusb.bin")               
+         
 def move_to_FTP():
     lFileSet=set(os.listdir(ftp_path))
     rFileSet=set(ftp.nlst())
@@ -91,13 +96,13 @@ def move_to_FTP():
     
     for fl in transferList:
         if fl!='System Volume Information' and fl!='BOOTEX.LOG':
-            UploadFTP(fl)
+            UploadFTP(ftp_path+'/'+fl,fl)
             print("Uploaded\n")
-    UploadFTP('./log.yaml')
+    UploadFTP('./log.yaml','log.yaml')
   
 os.system("sudo mount /piusb.bin /mnt")
 CopyConfig("/mnt/config.yaml")
-ReadConfig('./config.yaml')
+ReadConfig('/home/pi/rpi_ftp_synchronizer/config.yaml')
 WriteLog()
 connect_FTP(ftp_username,ftp_password,ftp_server)
 GPIO.output(9,GPIO.HIGH)
