@@ -95,7 +95,7 @@ def move_to_FTP():
     print("Missing: "+str((transferList)))
     
     for fl in transferList:
-        if fl!='System Volume Information' and fl!='BOOTEX.LOG':
+        if fl!='System Volume Information' and fl!='BOOTEX.LOG' and fl!='icon.ico' and fl!='autorun.inf':
             UploadFTP(ftp_path+'/'+fl,fl)
             print("Uploaded\n")
     UploadFTP('./log.yaml','log.yaml')
