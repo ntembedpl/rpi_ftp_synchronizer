@@ -8,8 +8,9 @@ echo "dtparam=act_led_trigger=none" | sudo tee -a /boot/config.txt
 echo "dtparam=act_led_activelow=on" | sudo tee -a /boot/config.txt
 
 echo "Daemonize gpio listener"
-sudo cp ./config/gpint.sh /etc/init.d/
-sudo chmod +x ./config/gpio.py
+sudo cp ./gpint.sh /etc/init.d/
+cd ..
+sudo chmod +x ./gpio.py
 sudo chmod +x /etc/init.d/gpint.sh
 sudo update-rc.d gpint.sh defaults
 
