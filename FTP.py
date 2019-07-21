@@ -16,9 +16,13 @@ files = []
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-GPIO.setup(9, GPIO.OUT,initial=GPIO.HIGH)
-GPIO.setup(10, GPIO.OUT,initial=GPIO.HIGH)
-GPIO.setup(25, GPIO.OUT,initial=GPIO.HIGH)
+R=13
+G=12
+B=6
+
+GPIO.setup(R, GPIO.OUT,initial=GPIO.HIGH)
+GPIO.setup(G, GPIO.OUT,initial=GPIO.HIGH)
+GPIO.setup(B, GPIO.OUT,initial=GPIO.HIGH)
 
 ftp=ftplib.FTP()
 
@@ -53,7 +57,7 @@ def WriteLog():
         yaml.dump(log,f)
 
 def ProgressCallback(self):
-    GPIO.output(25,not GPIO.input(25))
+    GPIO.output(B,not GPIO.input(B))
 
 def UploadFTP(file,filename):
     f=open(file,'rb')
@@ -68,13 +72,13 @@ def LED_blink(text,delay):
         print('%s: %d' % (text,count))
         
 def connect_FTP(username,password,server):     
-    GPIO.output(9,GPIO.LOW)
+    GPIO.output(G,GPIO.LOW)
     try:
         ftp.connect(server)
     except:
         print("Failed to connect server!")
-        GPIO.output(9,GPIO.HIGH)
-        GPIO.output(10,GPIO.LOW)
+        GPIO.output(G,GPIO.HIGH)
+        GPIO.output(R,GPIO.LOW)
 #    choice=input()
 #    while choice!="b":
 #        choice=input()
@@ -84,8 +88,8 @@ def connect_FTP(username,password,server):
         ftp.login(username,password)
     except:
         print("Failed to login!")
-        GPIO.output(9,GPIO.HIGH)
-        GPIO.output(10,GPIO.LOW)
+        GPIO.output(G,GPIO.HIGH)
+        GPIO.output(R,GPIO.LOW)
         os.system("sudo umount /piusb.bin")               
          
 def move_to_FTP():
@@ -105,11 +109,11 @@ CopyConfig("/mnt/config.yaml")
 ReadConfig('/home/pi/rpi_ftp_synchronizer/config.yaml')
 WriteLog()
 connect_FTP(ftp_username,ftp_password,ftp_server)
-GPIO.output(9,GPIO.HIGH)
+GPIO.output(G,GPIO.HIGH)
 move_to_FTP()
 ftp.quit()
-GPIO.output(25,GPIO.HIGH)
-GPIO.output(9,GPIO.LOW)
+GPIO.output(B,GPIO.HIGH)
+GPIO.output(G,GPIO.LOW)
 time.sleep(5)
 os.system("sudo umount /piusb.bin")
 GPIO.cleanup()
