@@ -6,6 +6,7 @@ echo "Daemonize gpio listener"
 sudo cp ./gpint.sh /etc/init.d/
 cd ..
 sudo chmod +x ./gpio.py
+sudo chmod +x ./run_cron.sh
 sudo chmod +x /etc/init.d/gpint.sh
 sudo update-rc.d gpint.sh defaults
 
