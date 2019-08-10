@@ -49,7 +49,7 @@ def WriteLog():
     print("size is: ")
     print(total_size)
     log=dict(
-        size='%.1f%%'%((float(total_size)/508000000)*100),
+        size='%.1f%%'%((float(total_size)/124514435072)*100),
         signal='100%',
         username=username,
         )
