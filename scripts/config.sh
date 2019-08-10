@@ -16,5 +16,11 @@ sudo mkdosfs /piusb.bin
 cd scripts
 sudo cp ./rc.local /etc/
 
+echo "Setup cron"
+crontab -l > mycron
+echo "*/10 * * * * sudo /home/pi/rpi_ftp_synchronizer/scripts/run_cron.sh" >> mycron
+crontab mycron
+rm mycron
+
 echo "Rebooting"
 sudo reboot
